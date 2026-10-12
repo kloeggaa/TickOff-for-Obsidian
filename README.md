@@ -49,12 +49,15 @@ There are no accounts, analytics, ads or trackers. See [PRIVACY.md](PRIVACY.md).
 Requirements: JDK 17 and the Android SDK (platform 36).
 
 ```sh
-./gradlew :app:assembleDebug        # debug APK
-./gradlew :app:testDebugUnitTest    # unit tests
-./gradlew lint
-./gradlew :app:bundleRelease        # release AAB (Google Play)
-./gradlew :app:assembleRelease      # release APK (sideloading)
+./gradlew :app:assembleFdroidDebug         # debug APK
+./gradlew :app:testFdroidDebugUnitTest     # unit tests
+./gradlew :app:lintFdroidDebug :app:lintPlayDebug
+./gradlew :app:bundlePlayRelease           # release AAB for Google Play
+./gradlew :app:assembleFdroidRelease       # release APK for sideloading (F-Droid variant)
 ```
+
+There are two build variants with identical code: `fdroid` (shows a donation link on the About
+screen) and `play` (no donation link, as Google Play's payments policy requires).
 
 Release signing is read from a git-ignored `keystore.properties` in the project root (copy
 `keystore.properties.example`). Without it, release builds are unsigned.

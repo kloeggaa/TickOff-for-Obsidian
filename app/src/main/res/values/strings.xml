@@ -69,6 +69,7 @@
     <string name="about_license">Free software, licensed under the GNU General Public License v3.0 or later.</string>
     <string name="about_source">Source code</string>
     <string name="about_privacy_policy">Full privacy policy</string>
+    <string name="about_donate">Support development ☕</string>
     <string name="about_contact">Contact: abhaken.monthly406@passmail.com</string>
     <string name="source_url" translatable="false">https://github.com/kloeggaa/TickOff-for-Obsidian</string>
     <string name="privacy_url" translatable="false">https://github.com/kloeggaa/TickOff-for-Obsidian/blob/main/PRIVACY.md</string>

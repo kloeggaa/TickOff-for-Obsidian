@@ -34,6 +34,20 @@ android {
         }
     }
 
+    // Two store variants with identical code. Only F-Droid builds show the donation link:
+    // Google Play's payments policy doesn't allow links to outside payment pages.
+    flavorDimensions += "store"
+    productFlavors {
+        create("fdroid") {
+            dimension = "store"
+            buildConfigField("String", "DONATE_URL", "\"https://buy.stripe.com/8x2cN6f1H47U9FRgs9eUU00\"")
+        }
+        create("play") {
+            dimension = "store"
+            buildConfigField("String", "DONATE_URL", "\"\"")
+        }
+    }
+
     signingConfigs {
         if (hasReleaseKeystore) {
             create("release") {
