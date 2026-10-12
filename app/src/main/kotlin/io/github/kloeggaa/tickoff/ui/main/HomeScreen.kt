@@ -58,7 +58,7 @@ private sealed interface PreviewState {
 }
 
 @Composable
-fun HomeScreen(onRecord: () -> Unit, onOpenSettings: () -> Unit, onOpenAbout: () -> Unit) {
+fun HomeScreen(onRecord: () -> Unit, onOpenSettings: () -> Unit, onOpenAbout: () -> Unit, onClose: () -> Unit) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     var preview by remember { mutableStateOf<PreviewState>(PreviewState.Loading) }
@@ -90,7 +90,7 @@ fun HomeScreen(onRecord: () -> Unit, onOpenSettings: () -> Unit, onOpenAbout: ()
         }
     }
 
-    TickOffScaffold(title = stringResource(R.string.app_name), onBack = null) { padding ->
+    TickOffScaffold(title = stringResource(R.string.app_name), onBack = null, onClose = onClose) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()

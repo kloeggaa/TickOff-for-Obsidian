@@ -12,12 +12,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import io.github.kloeggaa.tickoff.R
 
-/** Screen scaffold with a title and an optional back arrow. */
+/** Screen scaffold with a title, an optional back arrow and an optional close button. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TickOffScaffold(
     title: String,
     onBack: (() -> Unit)?,
+    onClose: (() -> Unit)? = null,
     content: @Composable (PaddingValues) -> Unit
 ) {
     Scaffold(
@@ -30,6 +31,16 @@ fun TickOffScaffold(
                             Icon(
                                 painterResource(R.drawable.ic_arrow_back),
                                 contentDescription = stringResource(R.string.back)
+                            )
+                        }
+                    }
+                },
+                actions = {
+                    if (onClose != null) {
+                        IconButton(onClick = onClose) {
+                            Icon(
+                                painterResource(R.drawable.ic_close),
+                                contentDescription = stringResource(R.string.close)
                             )
                         }
                     }

@@ -43,7 +43,8 @@ class MainActivity : ComponentActivity() {
                     else -> HomeScreen(
                         onRecord = { startActivity(RecordActivity.createLaunchIntent(this, autoStart = false)) },
                         onOpenSettings = { screen = SCREEN_SETTINGS },
-                        onOpenAbout = { screen = SCREEN_ABOUT }
+                        onOpenAbout = { screen = SCREEN_ABOUT },
+                        onClose = { finish() }
                     )
                 }
             }

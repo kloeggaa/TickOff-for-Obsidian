@@ -2,6 +2,7 @@
 <resources>
     <string name="app_name">TickOff for Obsidian</string>
     <string name="back">Back</string>
+    <string name="close">Close</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
     <string name="open_settings">Open settings</string>
