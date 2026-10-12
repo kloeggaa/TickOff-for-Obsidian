@@ -36,7 +36,7 @@ paths or "all files access".
 | Permission | Why |
 |---|---|
 | `RECORD_AUDIO` | Voice capture, only while the recorder screen is open |
-| `INTERNET` | Voice capture: sending the transcript to the AI provider you chose |
+| `INTERNET` | Voice capture: sending the transcript to the AI provider you chose; the optional "Test API key" and "Load models" buttons in Settings |
 
 The task list widget works fully offline and needs neither permission.
 

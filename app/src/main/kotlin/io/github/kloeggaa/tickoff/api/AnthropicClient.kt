@@ -52,6 +52,32 @@ class AnthropicClient(private val apiKey: String) {
         .build()
         .create(AnthropicService::class.java)
 
+    /** Checks the key and [model] with a model lookup; no text is generated or sent. */
+    suspend fun checkKey(model: String): KeyCheckResult = try {
+        val response = service.getModel(apiKey, model = model.ifBlank { DEFAULT_MODEL })
+        response.body()?.close()
+        response.errorBody()?.close()
+        KeyCheckResult(KeyCheck.outcomeFor(response.code()), response.code())
+    } catch (_: IOException) {
+        KeyCheckResult(KeyCheckOutcome.NETWORK_ERROR)
+    } catch (e: Exception) {
+        Log.e(TAG, "key check failed", e)
+        KeyCheckResult(KeyCheckOutcome.OTHER)
+    }
+
+    /** The models this key can use (newest first for Claude, chat models only for OpenAI). */
+    suspend fun listModels(): ModelListResult = try {
+        val response = service.listModels(apiKey)
+        val ids = response.body()?.data.orEmpty().map { it.id }
+        response.errorBody()?.close()
+        ModelListResult(ids.distinct(), KeyCheckResult(KeyCheck.outcomeFor(response.code()), response.code()))
+    } catch (_: IOException) {
+        ModelListResult(emptyList(), KeyCheckResult(KeyCheckOutcome.NETWORK_ERROR))
+    } catch (e: Exception) {
+        Log.e(TAG, "model list failed", e)
+        ModelListResult(emptyList(), KeyCheckResult(KeyCheckOutcome.OTHER))
+    }
+
     suspend fun getCompletion(model: String, messages: List<Message>): CompletionResult {
         val resolvedModel = model.ifBlank { DEFAULT_MODEL }
         val useFallback = usesServerFallback(resolvedModel)

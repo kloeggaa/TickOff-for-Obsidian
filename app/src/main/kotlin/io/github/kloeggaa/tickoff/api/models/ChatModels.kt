@@ -38,3 +38,15 @@ data class AnthropicContent(
     val type: String,
     val text: String? = null
 )
+
+// Model list (GET v1/models), same shape at OpenAI and Anthropic
+data class ModelList(
+    val data: List<ModelEntry> = emptyList(),
+    val has_more: Boolean? = null,
+    val last_id: String? = null
+)
+
+data class ModelEntry(
+    val id: String,
+    val display_name: String? = null
+)

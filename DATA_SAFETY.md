@@ -40,7 +40,7 @@ app info and performance (no crash logs or diagnostics), device or other IDs.
 
 - **Ads:** No ads.
 - **Target audience:** 18+ (or 13+). Not designed for children.
-- **Permissions:** `RECORD_AUDIO` (voice capture), `INTERNET` (voice capture). No storage,
+- **Permissions:** `RECORD_AUDIO` (voice capture), `INTERNET` (voice capture and the optional API key check / model list). No storage,
   location, contacts or "all files access" permissions.
 - **Privacy policy URL:** the hosted PRIVACY.md, e.g.
   `https://github.com/kloeggaa/TickOff-for-Obsidian/blob/main/PRIVACY.md`

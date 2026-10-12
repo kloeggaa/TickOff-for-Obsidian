@@ -32,6 +32,32 @@ class OpenAIClient(private val apiKey: String) {
         .build()
         .create(OpenAIService::class.java)
 
+    /** Checks the key and [model] with a model lookup; no text is generated or sent. */
+    suspend fun checkKey(model: String): KeyCheckResult = try {
+        val response = service.getModel("Bearer $apiKey", model.ifBlank { DEFAULT_MODEL })
+        response.body()?.close()
+        response.errorBody()?.close()
+        KeyCheckResult(KeyCheck.outcomeFor(response.code()), response.code())
+    } catch (_: IOException) {
+        KeyCheckResult(KeyCheckOutcome.NETWORK_ERROR)
+    } catch (e: Exception) {
+        Log.e(TAG, "key check failed", e)
+        KeyCheckResult(KeyCheckOutcome.OTHER)
+    }
+
+    /** The models this key can use (newest first for Claude, chat models only for OpenAI). */
+    suspend fun listModels(): ModelListResult = try {
+        val response = service.listModels("Bearer $apiKey")
+        val ids = response.body()?.data.orEmpty().map { it.id }
+        response.errorBody()?.close()
+        ModelListResult(ModelFilter.openAiChatModels(ids), KeyCheckResult(KeyCheck.outcomeFor(response.code()), response.code()))
+    } catch (_: IOException) {
+        ModelListResult(emptyList(), KeyCheckResult(KeyCheckOutcome.NETWORK_ERROR))
+    } catch (e: Exception) {
+        Log.e(TAG, "model list failed", e)
+        ModelListResult(emptyList(), KeyCheckResult(KeyCheckOutcome.OTHER))
+    }
+
     suspend fun getCompletion(model: String, messages: List<Message>): CompletionResult {
         val maxAttempts = 3
         var lastError = "Request failed."

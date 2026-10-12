@@ -46,12 +46,16 @@ Only when you record tasks:
 - **Why:** to turn your dictation into tasks. Nothing else is sent, and the request goes
   directly from your phone to the provider.
 
-That request is governed by the provider's terms and privacy policy for your API account:
+When you tap **Test API key** or **Load models** in Settings, the app sends one request to the
+provider you selected: your API key (and, for the test, the model name), to check the key or to
+list the models it can use. No tasks or other text are sent, and no cost arises.
+
+These requests are governed by the provider's terms and privacy policy for your API account:
 
 - OpenAI: https://openai.com/policies/privacy-policy
 - Anthropic: https://www.anthropic.com/legal/privacy
 
-If you never use voice capture, the app makes no network connections at all.
+If you never use voice capture, the key test or the model list, the app makes no network connections at all.
 
 ## Opening Obsidian
 

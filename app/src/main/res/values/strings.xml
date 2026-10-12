@@ -40,13 +40,32 @@
     <string name="settings_anthropic_key">Claude API key</string>
     <string name="settings_model">Model</string>
     <string name="settings_saved">Settings saved</string>
+    <string name="settings_show_key">Show API key</string>
+    <string name="settings_hide_key">Hide API key</string>
+    <string name="settings_test_key">Test API key</string>
+    <string name="settings_load_models">Load models</string>
+    <string name="settings_pick_model">Pick a model</string>
+    <string name="models_none">The key works, but no suitable chat models were found for it.</string>
+    <plurals name="models_loaded">
+        <item quantity="one">%1$d model loaded. Pick it with the arrow in the model field.</item>
+        <item quantity="other">%1$d models loaded. Pick one with the arrow in the model field.</item>
+    </plurals>
+    <string name="settings_test_key_hint">Both buttons use the key as entered, even before saving. Only your key (and, for the test, the model name) is sent to the provider; no tasks, and no cost.</string>
+    <string name="key_check_ok">✓ Key works and the model %1$s is available.</string>
+    <string name="key_check_invalid">The provider rejected this API key. Check that it was copied completely.</string>
+    <string name="key_check_no_access">The key is valid, but it has no access to the model %1$s.</string>
+    <string name="key_check_model_not_found">The key works, but the model %1$s doesn\'t exist. Check the model name.</string>
+    <string name="key_check_rate_limited">The key works, but its rate limit or quota is reached. Check your plan and billing with the provider.</string>
+    <string name="key_check_server_error">The provider has a problem right now (HTTP %1$d). Try again later.</string>
+    <string name="key_check_network">No connection to the provider. Check your internet connection.</string>
+    <string name="key_check_other">Unexpected answer from the provider (HTTP %1$s).</string>
 
     <!-- About / privacy -->
     <string name="about_title">About and privacy</string>
     <string name="about_disclaimer">Unofficial app, not affiliated with or endorsed by Obsidian.</string>
     <string name="about_text">TickOff shows the open tasks of one Markdown file in your vault as a home-screen checklist. Ticking a task writes \"- [x]\" and today\'s done date into the file. A voice widget lets you dictate new tasks, which are added to the same file.</string>
     <string name="privacy_title">Privacy</string>
-    <string name="privacy_text">• No account, no ads, no analytics, no tracking.\n• TickOff only reads and writes the task files you choose: one in your vault folder, plus any file you pick for a widget.\n• Speech recognition uses your phone\'s speech service. TickOff does not store audio.\n• Only when you record tasks is the transcribed text sent to OpenAI or Anthropic (whichever you chose) with your own API key. Their privacy policy applies to that request.\n• Your settings and API key stay on this phone and are excluded from backups.</string>
+    <string name="privacy_text">• No account, no ads, no analytics, no tracking.\n• TickOff only reads and writes the task files you choose: one in your vault folder, plus any file you pick for a widget.\n• Speech recognition uses your phone\'s speech service. TickOff does not store audio.\n• Only when you record tasks is the transcribed text sent to OpenAI or Anthropic (whichever you chose) with your own API key. Their privacy policy applies to that request.\n• \"Test API key\" and \"Load models\" in Settings send only your key (and the model name) to that provider.\n• Your settings and API key stay on this phone and are excluded from backups.</string>
     <string name="about_license">Free software, licensed under the GNU General Public License v3.0 or later.</string>
     <string name="about_source">Source code</string>
     <string name="about_privacy_policy">Full privacy policy</string>

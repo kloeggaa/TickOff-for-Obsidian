@@ -18,6 +18,6 @@
 <b>Private by design</b>
 • No account, ads, analytics or tracking
 • Accesses only the vault folder and the files you pick, through Android's pickers (no storage permissions)
-• The task list works fully offline. The network is used only for voice capture, directly between your phone and the AI provider you chose
+• The task list works fully offline. The network is used only for voice capture and the optional API key test and model list, directly between your phone and the AI provider you chose
 
 Free and open-source software under the GPLv3.
