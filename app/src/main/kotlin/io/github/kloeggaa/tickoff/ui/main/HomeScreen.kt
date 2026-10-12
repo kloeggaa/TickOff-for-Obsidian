@@ -46,6 +46,7 @@ import io.github.kloeggaa.tickoff.widget.TaskListSorter
 import io.github.kloeggaa.tickoff.widget.TaskListWidgetProvider
 import io.github.kloeggaa.tickoff.widget.TaskParser
 import io.github.kloeggaa.tickoff.widget.TaskRecordingWidgetProvider
+import io.github.kloeggaa.tickoff.ui.theme.DonateButton
 import io.github.kloeggaa.tickoff.ui.theme.TickOffScaffold
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -130,6 +131,7 @@ fun HomeScreen(onRecord: () -> Unit, onOpenSettings: () -> Unit, onOpenAbout: ()
             OutlinedButton(onClick = onOpenAbout, modifier = Modifier.fillMaxWidth()) {
                 Text(stringResource(R.string.about_title))
             }
+            DonateButton()
         }
     }
 }

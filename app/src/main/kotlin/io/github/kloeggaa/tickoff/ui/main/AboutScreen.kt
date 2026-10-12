@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import io.github.kloeggaa.tickoff.BuildConfig
 import io.github.kloeggaa.tickoff.R
+import io.github.kloeggaa.tickoff.ui.theme.DonateButton
 import io.github.kloeggaa.tickoff.ui.theme.TickOffScaffold
 
 @Composable
@@ -58,12 +59,7 @@ fun AboutScreen(onBack: () -> Unit) {
             TextButton(onClick = { openUrl(context.getString(R.string.privacy_url)) }) {
                 Text(stringResource(R.string.about_privacy_policy))
             }
-            // Empty in the Google Play build (see productFlavors in app/build.gradle.kts).
-            if (BuildConfig.DONATE_URL.isNotEmpty()) {
-                TextButton(onClick = { openUrl(BuildConfig.DONATE_URL) }) {
-                    Text(stringResource(R.string.about_donate))
-                }
-            }
+            DonateButton()
             Text(stringResource(R.string.about_contact), style = MaterialTheme.typography.bodySmall)
         }
     }
