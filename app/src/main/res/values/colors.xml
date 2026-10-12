@@ -6,6 +6,6 @@
     <color name="widget_text_secondary">#FF404943</color>
     <color name="widget_checkbox">#FF2E6B4F</color>
     <color name="widget_refresh_background">#FFDCE5DD</color>
-    <color name="brand_green">#FF2E6B4F</color>
+    <color name="brand_icon">#FF5B237B</color>
     <color name="window_background">#FFF6F8F5</color>
 </resources>
