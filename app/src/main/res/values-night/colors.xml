@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="widget_background">#FF171D19</color>
-    <color name="widget_text">#FFDEE4DF</color>
-    <color name="widget_text_secondary">#FFC0C9C1</color>
-    <color name="widget_checkbox">#FF8FD5AE</color>
-    <color name="widget_refresh_background">#FF29322C</color>
-    <color name="window_background">#FF0F1512</color>
+    <color name="widget_background">#FF1F1824</color>
+    <color name="widget_text">#FFEAE0EE</color>
+    <color name="widget_text_secondary">#FFCDC2D6</color>
+    <color name="widget_checkbox">#FFD7B8F0</color>
+    <color name="widget_refresh_background">#FF2F2637</color>
+    <color name="window_background">#FF16111A</color>
 </resources>

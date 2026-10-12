@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Widget and system-bar colors; values-night/colors.xml has the dark variants. -->
+    <!-- Widget and window colors in TickOff's plum; values-night/colors.xml has the dark variants. -->
     <color name="widget_background">#FFFFFFFF</color>
-    <color name="widget_text">#FF171D19</color>
-    <color name="widget_text_secondary">#FF404943</color>
-    <color name="widget_checkbox">#FF2E6B4F</color>
-    <color name="widget_refresh_background">#FFDCE5DD</color>
-    <color name="window_background">#FFF6F8F5</color>
+    <color name="widget_text">#FF1E1A22</color>
+    <color name="widget_text_secondary">#FF4A4453</color>
+    <color name="widget_checkbox">#FF75369F</color>
+    <color name="widget_refresh_background">#FFEDE5F4</color>
+    <color name="window_background">#FFFBF8FD</color>
 </resources>

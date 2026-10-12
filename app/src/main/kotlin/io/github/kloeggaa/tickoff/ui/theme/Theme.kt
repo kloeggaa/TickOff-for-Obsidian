@@ -7,35 +7,49 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-// TickOff's own "ticked-off" green. Deliberately unrelated to Obsidian's branding.
+// TickOff's warm plum, taken from the app icon (#5B237B / #75369F, lavender #F2EDF8,
+// checklist lines #8F79B2, coral accent #FF8A65). Deliberately a warm, reddish plum on
+// light or aubergine surfaces, not Obsidian's cool violet on black.
 private val LightColors = lightColorScheme(
-    primary = Color(0xFF2E6B4F),
+    primary = Color(0xFF5B237B),
     onPrimary = Color.White,
-    primaryContainer = Color(0xFFB3F0CF),
-    onPrimaryContainer = Color(0xFF002114),
-    secondary = Color(0xFF4D6357),
-    background = Color(0xFFF6F8F5),
-    onBackground = Color(0xFF171D19),
+    primaryContainer = Color(0xFFEBDCF6),
+    onPrimaryContainer = Color(0xFF2A0B3D),
+    secondary = Color(0xFF6E5B8C),
+    onSecondary = Color.White,
+    secondaryContainer = Color(0xFFE6DDF2),
+    onSecondaryContainer = Color(0xFF2A1F3B),
+    tertiary = Color(0xFFB4532F),
+    onTertiary = Color.White,
+    background = Color(0xFFFBF8FD),
+    onBackground = Color(0xFF1E1A22),
     surface = Color(0xFFFFFFFF),
-    onSurface = Color(0xFF171D19),
-    surfaceVariant = Color(0xFFDCE5DD),
-    onSurfaceVariant = Color(0xFF404943),
+    onSurface = Color(0xFF1E1A22),
+    surfaceVariant = Color(0xFFEDE5F4),
+    onSurfaceVariant = Color(0xFF4A4453),
+    outline = Color(0xFF8F79B2),
     errorContainer = Color(0xFFFFDAD6),
     onErrorContainer = Color(0xFF410002)
 )
 
 private val DarkColors = darkColorScheme(
-    primary = Color(0xFF8FD5AE),
-    onPrimary = Color(0xFF003823),
-    primaryContainer = Color(0xFF125237),
-    onPrimaryContainer = Color(0xFFB3F0CF),
-    secondary = Color(0xFFB4CCBD),
-    background = Color(0xFF0F1512),
-    onBackground = Color(0xFFDEE4DF),
-    surface = Color(0xFF171D19),
-    onSurface = Color(0xFFDEE4DF),
-    surfaceVariant = Color(0xFF29322C),
-    onSurfaceVariant = Color(0xFFC0C9C1),
+    primary = Color(0xFFD7B8F0),
+    onPrimary = Color(0xFF3E1257),
+    primaryContainer = Color(0xFF5B237B),
+    onPrimaryContainer = Color(0xFFF2E1FF),
+    secondary = Color(0xFFCBBDE6),
+    onSecondary = Color(0xFF33284A),
+    secondaryContainer = Color(0xFF4A3D63),
+    onSecondaryContainer = Color(0xFFE9DDFF),
+    tertiary = Color(0xFFFFB59C),
+    onTertiary = Color(0xFF561F0B),
+    background = Color(0xFF16111A),
+    onBackground = Color(0xFFEAE0EE),
+    surface = Color(0xFF1F1824),
+    onSurface = Color(0xFFEAE0EE),
+    surfaceVariant = Color(0xFF2F2637),
+    onSurfaceVariant = Color(0xFFCDC2D6),
+    outline = Color(0xFF978BA2),
     errorContainer = Color(0xFF93000A),
     onErrorContainer = Color(0xFFFFDAD6)
 )
