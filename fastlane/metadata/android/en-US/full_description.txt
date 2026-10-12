@@ -12,6 +12,8 @@
 
 <b>Voice capture widget</b>
 • A one-tap mic button: dictate your tasks, and they are added to the same file
+• Your speech is turned into text by Android's built-in speech recognition, on the device where available, so no AI service is paid for transcription
+• AI is used for one small step only: extracting the tasks from the transcribed text. This keeps your API costs minimal
 • Relative dates like "next Friday" become proper 📅 due dates
 • Uses your own OpenAI or Claude API key (bring your own key). Only the transcribed text is sent, never audio
 

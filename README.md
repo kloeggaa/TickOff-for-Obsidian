@@ -59,6 +59,11 @@ Requirements: JDK 17 and the Android SDK (platform 36).
 Release signing is read from a git-ignored `keystore.properties` in the project root (copy
 `keystore.properties.example`). Without it, release builds are unsigned.
 
+## Support
+
+TickOff is free and has no ads. If it saves you time, you can support its development:
+[buy me a coffee](https://buy.stripe.com/8x2cN6f1H47U9FRgs9eUU00). Thank you!
+
 ## License
 
 Copyright (C) 2026 kloeggaa
