@@ -1,0 +1,32 @@
+# Draft for https://gitlab.com/fdroid/fdroiddata -> metadata/io.github.kloeggaa.tickoff.yml
+# Check against the current fdroiddata docs before submitting; run `fdroid lint` / `fdroid build -v -l` locally.
+AntiFeatures:
+  NonFreeNet:
+    en-US: The optional voice capture sends the transcribed text to OpenAI or Anthropic
+      using the user's own API key. The task list widget works fully offline.
+Categories:
+  - Note
+  - Task
+License: GPL-3.0-or-later
+AuthorName: kloeggaa
+AuthorEmail: abhaken.monthly406@passmail.com
+SourceCode: https://github.com/kloeggaa/TickOff-for-Obsidian
+IssueTracker: https://github.com/kloeggaa/TickOff-for-Obsidian/issues
+
+AutoName: TickOff for Obsidian
+
+RepoType: git
+Repo: https://github.com/kloeggaa/TickOff-for-Obsidian.git
+
+Builds:
+  - versionName: 1.0.0
+    versionCode: 1
+    commit: v1.0.0
+    subdir: app
+    gradle:
+      - yes
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags
+CurrentVersion: 1.0.0
+CurrentVersionCode: 1

@@ -1,0 +1,4 @@
+First release.
+• Task list widget: tick off tasks, with due-date sorting, a file of your choice per widget and an optional "open in Obsidian" action
+• Voice capture widget: dictate tasks, extracted with your own OpenAI or Claude key
+• Choose your vault folder, task folder and file name in Settings

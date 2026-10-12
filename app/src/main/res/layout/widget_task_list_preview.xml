@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Static picture of the Task List widget, shown in the launcher's widget picker (Android 12+). -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/bg_widget"
+    android:paddingTop="6dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:text="@string/preview_file"
+        android:textSize="12sp"
+        android:textColor="@color/widget_text_secondary" />
+
+    <include layout="@layout/widget_task_list_preview_row_1" />
+    <include layout="@layout/widget_task_list_preview_row_2" />
+    <include layout="@layout/widget_task_list_preview_row_3" />
+</LinearLayout>

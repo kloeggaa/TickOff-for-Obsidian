@@ -1,0 +1,1 @@
+Tick off and dictate tasks in your Obsidian vault from home-screen widgets.

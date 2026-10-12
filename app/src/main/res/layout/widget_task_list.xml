@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/background"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:clipToOutline="true"
+    android:background="@drawable/bg_widget">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/task_list_file_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="36dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="2dp"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:textSize="12sp"
+            android:textColor="@color/widget_text_secondary" />
+
+        <ImageButton
+            android:id="@+id/task_list_refresh_button"
+            android:layout_width="22dp"
+            android:layout_height="22dp"
+            android:layout_gravity="end"
+            android:layout_marginTop="6dp"
+            android:layout_marginBottom="2dp"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/bg_widget_refresh_button"
+            android:padding="3dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_widget_refresh"
+            android:contentDescription="@string/task_list_refresh" />
+    </FrameLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <ListView
+            android:id="@+id/task_list_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="1dp" />
+
+        <TextView
+            android:id="@+id/task_list_empty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:padding="16dp"
+            android:text="@string/task_list_empty"
+            android:textColor="@color/widget_text_secondary" />
+    </FrameLayout>
+</LinearLayout>

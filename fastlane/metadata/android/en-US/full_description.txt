@@ -1,0 +1,23 @@
+<i>Unofficial app, not affiliated with or endorsed by Obsidian.</i>
+
+<b>TickOff</b> puts the tasks of your Obsidian vault on your home screen.
+
+<b>Task list widget</b>
+• Shows the open tasks ("- [ ] …") of a Markdown file as a checklist
+• Pick a different file for each widget when you add it, e.g. one for work, one for shopping
+• Tap the box to tick a task off. TickOff writes "- [x]" and today's done date ("✅ yyyy-mm-dd", the Obsidian Tasks style) into the file
+• Tasks with a 📅 due date are sorted: overdue 🔥, today 🌟, then upcoming; tasks due beyond a window you choose are hidden
+• Optional: tap a task to open the file in the Obsidian app, either with Obsidian's built-in link or with the Advanced URI community plugin
+• Follows your phone's light or dark theme
+
+<b>Voice capture widget</b>
+• A one-tap mic button: dictate your tasks, and they are added to the same file
+• Relative dates like "next Friday" become proper 📅 due dates
+• Uses your own OpenAI or Claude API key (bring your own key). Only the transcribed text is sent, never audio
+
+<b>Private by design</b>
+• No account, ads, analytics or tracking
+• Accesses only the vault folder and the files you pick, through Android's pickers (no storage permissions)
+• The task list works fully offline. The network is used only for voice capture, directly between your phone and the AI provider you chose
+
+Free and open-source software under the GPLv3.

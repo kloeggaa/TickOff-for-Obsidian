@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TickOff for Obsidian</string>
+    <string name="back">Back</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="open_settings">Open settings</string>
+
+    <!-- Home -->
+    <string name="home_intro">Tick off tasks from your Obsidian vault right on your home screen, and capture new ones by voice.</string>
+    <string name="home_preview_title">Task list widget preview</string>
+    <plurals name="home_preview_more">
+        <item quantity="one">…and %1$d more task</item>
+        <item quantity="other">…and %1$d more tasks</item>
+    </plurals>
+    <string name="home_record">Record tasks</string>
+    <string name="home_widgets_title">Widgets</string>
+    <string name="home_add_list_widget">Add task list widget</string>
+    <string name="home_add_mic_widget">Add voice capture widget</string>
+    <string name="home_add_widget_manual">Long-press your home screen, choose Widgets and look for TickOff.</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_vault_section">Vault and task file</string>
+    <string name="settings_vault_hint">Pick your vault\'s root folder. TickOff only gets access to that folder.</string>
+    <string name="settings_vault_current">Vault: %1$s</string>
+    <string name="settings_vault_none">No vault folder chosen yet.</string>
+    <string name="settings_pick_vault">Choose vault folder</string>
+    <string name="settings_vault_failed">Could not keep access to that folder. Please choose it again.</string>
+    <string name="settings_folder_label">Folder inside the vault</string>
+    <string name="settings_folder_hint">For example Tasks or Notes/Inbox. Leave empty for the vault root.</string>
+    <string name="settings_file_label">Task file name</string>
+    <string name="settings_file_hint">Default: %1$s. It is created when the first recorded task is saved.</string>
+    <string name="settings_ai_section">Voice capture (AI)</string>
+    <string name="settings_ai_hint">Recorded speech is turned into text on your phone. Only that text is sent to the provider below, with your own API key, to turn it into tasks. The task list widget works without a key.</string>
+    <string name="settings_provider_openai">OpenAI</string>
+    <string name="settings_provider_anthropic">Claude (Anthropic)</string>
+    <string name="settings_openai_key">OpenAI API key</string>
+    <string name="settings_anthropic_key">Claude API key</string>
+    <string name="settings_model">Model</string>
+    <string name="settings_saved">Settings saved</string>
+
+    <!-- About / privacy -->
+    <string name="about_title">About and privacy</string>
+    <string name="about_disclaimer">Unofficial app, not affiliated with or endorsed by Obsidian.</string>
+    <string name="about_text">TickOff shows the open tasks of one Markdown file in your vault as a home-screen checklist. Ticking a task writes \"- [x]\" and today\'s done date into the file. A voice widget lets you dictate new tasks, which are added to the same file.</string>
+    <string name="privacy_title">Privacy</string>
+    <string name="privacy_text">• No account, no ads, no analytics, no tracking.\n• TickOff only reads and writes the task files you choose: one in your vault folder, plus any file you pick for a widget.\n• Speech recognition uses your phone\'s speech service. TickOff does not store audio.\n• Only when you record tasks is the transcribed text sent to OpenAI or Anthropic (whichever you chose) with your own API key. Their privacy policy applies to that request.\n• Your settings and API key stay on this phone and are excluded from backups.</string>
+    <string name="about_license">Free software, licensed under the GNU General Public License v3.0 or later.</string>
+    <string name="about_source">Source code</string>
+    <string name="about_privacy_policy">Full privacy policy</string>
+    <string name="about_contact">Contact: abhaken.monthly406@passmail.com</string>
+    <string name="source_url" translatable="false">https://github.com/kloeggaa/TickOff-for-Obsidian</string>
+    <string name="privacy_url" translatable="false">https://github.com/kloeggaa/TickOff-for-Obsidian/blob/main/PRIVACY.md</string>
+
+    <!-- Recorder -->
+    <string name="record_title">Record tasks</string>
+    <string name="record_start">Start recording</string>
+    <string name="record_stop">Stop and save</string>
+    <string name="record_status_ready">Ready to record</string>
+    <string name="record_status_listening">Listening…</string>
+    <string name="record_status_extracting">Extracting tasks…</string>
+    <string name="record_transcript">Transcript</string>
+    <string name="record_transcript_hint">Start recording and speak your tasks…</string>
+    <string name="record_tasks">Tasks</string>
+    <string name="record_tasks_hint">Your extracted tasks will appear here.</string>
+    <string name="record_stt_issue">Speech recognition issue: %1$s</string>
+    <string name="record_no_speech">No speech detected. Try recording again.</string>
+    <string name="record_no_recognizer">This phone has no speech recognition service.</string>
+    <string name="record_no_vault">Choose your vault folder in Settings before saving tasks.</string>
+    <string name="record_no_key">Add your %1$s API key in Settings to turn speech into tasks.</string>
+    <string name="record_extract_failed">Task extraction failed: %1$s</string>
+    <string name="record_saved">Tasks saved to %1$s</string>
+    <string name="record_save_failed">Could not write %1$s. Check the vault folder in Settings.</string>
+    <string name="mic_permission_title">Microphone access</string>
+    <string name="mic_permission_text">TickOff needs the microphone to record your tasks. If you denied it before, allow it in the system settings of this app.</string>
+    <string name="mic_permission_grant">Allow microphone</string>
+
+    <!-- Widgets -->
+    <string name="task_widget_label">Voice capture</string>
+    <string name="task_widget_description">Tap to dictate new tasks into your task file.</string>
+    <string name="task_list_widget_label">Task list</string>
+    <string name="task_list_widget_description">Open tasks from your task file as a checklist.</string>
+    <string name="task_list_empty">No open tasks</string>
+    <string name="task_list_no_vault">Open TickOff and choose your vault folder.</string>
+    <string name="task_list_no_access">TickOff lost access to this file. Open the app, or set the widget up again.</string>
+    <string name="task_list_refresh">Refresh tasks</string>
+    <string name="task_list_toggle_description">Mark task done</string>
+
+    <!-- Widget setup -->
+    <string name="config_title">Task list widget</string>
+    <string name="config_file_title">Task file</string>
+    <string name="config_file_default">Default task file</string>
+    <string name="config_file_default_unset">Not set yet: choose your vault folder in Settings.</string>
+    <string name="config_file_own">Choose a file for this widget</string>
+    <string name="config_file_own_hint">Any Markdown file, for example a project or shopping list in your vault.</string>
+    <string name="config_file_change">Choose another file</string>
+    <string name="config_file_no_access">That storage location doesn\'t allow lasting access. Pick a file on the phone\'s storage.</string>
+    <string name="config_open_outside_vault">Opening in Obsidian is only possible for files inside your vault folder.</string>
+    <string name="task_list_due_window_title">Due date window</string>
+    <string name="task_list_due_window_hint">Tasks due further out than this many days from today aren\'t shown. Tasks without a 📅 due date are always shown.</string>
+    <string name="task_list_due_window_label">Days ahead</string>
+    <string name="config_open_title">Tapping a task</string>
+    <string name="config_open_hint">TickOff can open the task file in Obsidian when you tap a task. This needs the Obsidian app on this phone, because the file is opened through an obsidian:// deep link.</string>
+    <string name="config_obsidian_missing">Obsidian isn\'t installed on this phone right now.</string>
+    <string name="config_open_off">Do nothing (only the checkbox reacts)</string>
+    <string name="config_open_obsidian">Open in Obsidian, no plugin</string>
+    <string name="config_open_obsidian_hint">Uses Obsidian\'s built-in link. Repeated taps may open the note in a new tab each time.</string>
+    <string name="config_open_adv">Open in Obsidian with the Advanced URI plugin</string>
+    <string name="config_open_adv_hint">Reopens the note in place. Requires the community plugin \"Advanced URI\" to be installed and enabled in this vault.</string>
+    <string name="config_add">Save widget</string>
+
+    <!-- Obsidian launcher -->
+    <string name="obsidian_not_installed">Obsidian is not installed</string>
+    <string name="obsidian_no_vault">Choose your vault folder in TickOff first</string>
+    <string name="obsidian_outside_vault">This file isn\'t inside your vault folder</string>
+    <!-- Widget picker preview (sample content) -->
+    <string name="preview_file" translatable="false">TasksAI.md</string>
+    <string name="preview_task_1">Call the plumber</string>
+    <string name="preview_task_2">Buy birthday present</string>
+    <string name="preview_task_3">Renew library books</string>
+</resources>
