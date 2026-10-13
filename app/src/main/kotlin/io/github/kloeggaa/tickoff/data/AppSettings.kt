@@ -95,23 +95,36 @@ class AppSettings(private val context: Context) {
      * app's data was restored from a copy. Settings then asks for the key again.
      */
     suspend fun isStoredKeyUnreadable(provider: String): Boolean {
-        val pref = if (provider == PROVIDER_ANTHROPIC) ANTHROPIC_API_KEY else OPENAI_API_KEY
-        val stored = context.dataStore.data.first()[pref] ?: return false
+        val stored = context.dataStore.data.first()[apiKeyPref(provider)] ?: return false
         return withContext(Dispatchers.IO) { ApiKeyCipher.decrypt(stored) } == null
     }
 
+    /** The usable stored key for [provider], or null. Never shown in the UI; only sent to the provider. */
+    suspend fun apiKey(provider: String): String? =
+        if (provider == PROVIDER_ANTHROPIC) anthropicApiKeyFlow.first() else openAiApiKeyFlow.first()
+
+    /**
+     * Keys are write-only in the UI: a blank key leaves the stored one unchanged. Use [removeApiKey]
+     * to delete it.
+     */
     suspend fun saveAi(provider: String, openAiKey: String, openAiModel: String, anthropicKey: String, anthropicModel: String) {
         context.dataStore.edit {
             it[AI_PROVIDER] = provider
-            putKeyOrRemove(it, OPENAI_API_KEY, openAiKey)
-            putKeyOrRemove(it, ANTHROPIC_API_KEY, anthropicKey)
+            putKeyIfEntered(it, OPENAI_API_KEY, openAiKey)
+            putKeyIfEntered(it, ANTHROPIC_API_KEY, anthropicKey)
             it[OPENAI_MODEL] = openAiModel.trim().ifBlank { OpenAIClient.DEFAULT_MODEL }
             it[ANTHROPIC_MODEL] = anthropicModel.trim().ifBlank { AnthropicClient.DEFAULT_MODEL }
         }
     }
 
-    private fun putKeyOrRemove(prefs: androidx.datastore.preferences.core.MutablePreferences, key: Preferences.Key<String>, value: String) {
+    suspend fun removeApiKey(provider: String) {
+        context.dataStore.edit { it.remove(apiKeyPref(provider)) }
+    }
+
+    private fun apiKeyPref(provider: String) = if (provider == PROVIDER_ANTHROPIC) ANTHROPIC_API_KEY else OPENAI_API_KEY
+
+    private fun putKeyIfEntered(prefs: androidx.datastore.preferences.core.MutablePreferences, key: Preferences.Key<String>, value: String) {
         val normalized = value.trim()
-        if (normalized.isBlank()) prefs.remove(key) else prefs[key] = ApiKeyCipher.encrypt(normalized)
+        if (normalized.isNotBlank()) prefs[key] = ApiKeyCipher.encrypt(normalized)
     }
 }

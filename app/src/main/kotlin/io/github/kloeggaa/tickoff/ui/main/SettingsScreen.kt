@@ -28,6 +28,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -83,8 +84,16 @@ fun SettingsScreen(onBack: () -> Unit) {
     var modelListResult by remember { mutableStateOf<ModelListResult?>(null) }
     var loadedModels by remember { mutableStateOf(emptyList<String>()) }
     var modelMenuOpen by remember { mutableStateOf(false) }
-    // Providers whose stored key can't be decrypted here (e.g. app data restored from a copy).
+    // Keys are write-only: the key fields only hold a newly entered key, never the saved one.
+    // Providers with a usable saved key, and with a saved key that can't be decrypted here
+    // (e.g. app data restored from a copy).
+    var savedKeys by remember { mutableStateOf(emptySet<String>()) }
     var unreadableKeys by remember { mutableStateOf(emptySet<String>()) }
+    val providers = listOf(AppSettings.PROVIDER_OPENAI, AppSettings.PROVIDER_ANTHROPIC)
+    suspend fun reloadKeyState() {
+        savedKeys = providers.filter { settings.apiKey(it) != null }.toSet()
+        unreadableKeys = providers.filter { settings.isStoredKeyUnreadable(it) }.toSet()
+    }
 
     LaunchedEffect(Unit) {
         vaultUri = settings.vaultTreeUriFlow.first()
@@ -92,13 +101,9 @@ fun SettingsScreen(onBack: () -> Unit) {
         folder = settings.taskFolderFlow.first()
         fileName = settings.taskFileNameFlow.first()
         provider = settings.aiProviderFlow.first()
-        openAiKey = settings.openAiApiKeyFlow.first().orEmpty()
         openAiModel = settings.openAiModelFlow.first()
-        anthropicKey = settings.anthropicApiKeyFlow.first().orEmpty()
         anthropicModel = settings.anthropicModelFlow.first()
-        unreadableKeys = listOf(AppSettings.PROVIDER_OPENAI, AppSettings.PROVIDER_ANTHROPIC)
-            .filter { settings.isStoredKeyUnreadable(it) }
-            .toSet()
+        reloadKeyState()
         loaded = true
     }
 
@@ -174,12 +179,34 @@ fun SettingsScreen(onBack: () -> Unit) {
                 }
             )
             val isAnthropic = provider == AppSettings.PROVIDER_ANTHROPIC
-            if (isAnthropic) {
-                SecretField(
-                    anthropicKey,
-                    { anthropicKey = it; keyCheckResult = null; modelListResult = null; loadedModels = emptyList() },
-                    stringResource(R.string.settings_anthropic_key)
+            val enteredKey = (if (isAnthropic) anthropicKey else openAiKey).trim()
+            SecretField(
+                value = if (isAnthropic) anthropicKey else openAiKey,
+                onValueChange = {
+                    if (isAnthropic) anthropicKey = it else openAiKey = it
+                    keyCheckResult = null; modelListResult = null; loadedModels = emptyList()
+                },
+                label = stringResource(if (isAnthropic) R.string.settings_anthropic_key else R.string.settings_openai_key),
+                keySaved = provider in savedKeys
+            )
+            if (enteredKey.isEmpty() && provider in unreadableKeys) {
+                Text(
+                    stringResource(R.string.settings_key_unreadable),
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall
                 )
+            }
+            if (enteredKey.isEmpty() && (provider in savedKeys || provider in unreadableKeys)) {
+                TextButton(onClick = {
+                    scope.launch {
+                        settings.removeApiKey(provider)
+                        reloadKeyState()
+                        keyCheckResult = null; modelListResult = null; loadedModels = emptyList()
+                        Toast.makeText(context, R.string.settings_key_removed, Toast.LENGTH_SHORT).show()
+                    }
+                }) { Text(stringResource(R.string.settings_remove_key)) }
+            }
+            if (isAnthropic) {
                 ModelField(
                     anthropicModel,
                     { anthropicModel = it; keyCheckResult = null },
@@ -187,11 +214,6 @@ fun SettingsScreen(onBack: () -> Unit) {
                     modelMenuOpen
                 ) { modelMenuOpen = it }
             } else {
-                SecretField(
-                    openAiKey,
-                    { openAiKey = it; keyCheckResult = null; modelListResult = null; loadedModels = emptyList() },
-                    stringResource(R.string.settings_openai_key)
-                )
                 ModelField(
                     openAiModel,
                     { openAiModel = it; keyCheckResult = null },
@@ -199,31 +221,27 @@ fun SettingsScreen(onBack: () -> Unit) {
                     modelMenuOpen
                 ) { modelMenuOpen = it }
             }
-            if (provider in unreadableKeys && (if (isAnthropic) anthropicKey else openAiKey).isBlank()) {
-                Text(
-                    stringResource(R.string.settings_key_unreadable),
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }
 
-            val keyToTest = (if (isAnthropic) anthropicKey else openAiKey).trim()
+            // The entered key, or else the saved one (read only when a button is pressed, never shown).
+            val canTest = enteredKey.isNotEmpty() || provider in savedKeys
+            suspend fun keyToTest(): String = enteredKey.ifEmpty { settings.apiKey(provider).orEmpty() }
             val modelToTest = (if (isAnthropic) anthropicModel else openAiModel).trim()
                 .ifBlank { if (isAnthropic) AnthropicClient.DEFAULT_MODEL else OpenAIClient.DEFAULT_MODEL }
             val busy = keyCheckRunning || modelListRunning
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedButton(
-                    enabled = keyToTest.isNotEmpty() && !busy,
+                    enabled = canTest && !busy,
                     onClick = {
                         scope.launch {
                             keyCheckRunning = true
                             keyCheckResult = null
                             modelListResult = null
+                            val key = keyToTest()
                             keyCheckResult = withContext(Dispatchers.IO) {
                                 if (isAnthropic) {
-                                    AnthropicClient(keyToTest).checkKey(modelToTest)
+                                    AnthropicClient(key).checkKey(modelToTest)
                                 } else {
-                                    OpenAIClient(keyToTest).checkKey(modelToTest)
+                                    OpenAIClient(key).checkKey(modelToTest)
                                 }
                             }
                             keyCheckRunning = false
@@ -231,14 +249,15 @@ fun SettingsScreen(onBack: () -> Unit) {
                     }
                 ) { Text(stringResource(R.string.settings_test_key)) }
                 OutlinedButton(
-                    enabled = keyToTest.isNotEmpty() && !busy,
+                    enabled = canTest && !busy,
                     onClick = {
                         scope.launch {
                             modelListRunning = true
                             keyCheckResult = null
                             modelListResult = null
+                            val key = keyToTest()
                             val result = withContext(Dispatchers.IO) {
-                                if (isAnthropic) AnthropicClient(keyToTest).listModels() else OpenAIClient(keyToTest).listModels()
+                                if (isAnthropic) AnthropicClient(key).listModels() else OpenAIClient(key).listModels()
                             }
                             modelListResult = result
                             loadedModels = result.models
@@ -268,8 +287,10 @@ fun SettingsScreen(onBack: () -> Unit) {
                     scope.launch {
                         settings.saveTaskFile(folder, fileName)
                         settings.saveAi(provider, openAiKey, openAiModel, anthropicKey, anthropicModel)
-                        // Saving re-encrypts entered keys and removes blank ones, so nothing unreadable is left.
-                        unreadableKeys = emptySet()
+                        // Saved keys aren't shown again: clear the fields and show the "saved" state.
+                        openAiKey = ""
+                        anthropicKey = ""
+                        reloadKeyState()
                         folder = settings.taskFolderFlow.first()
                         fileName = settings.taskFileNameFlow.first()
                         withContext(Dispatchers.IO) { TaskListWidgetProvider.refreshAll(context) }
@@ -295,23 +316,44 @@ private fun ProviderOption(label: String, selected: Boolean, onSelect: () -> Uni
     }
 }
 
+/**
+ * API key input. It only ever holds a newly typed key: a saved key is never loaded back, only
+ * indicated. The eye toggle exists only for the key being typed, to check it before saving.
+ */
 @Composable
-private fun SecretField(value: String, onValueChange: (String) -> Unit, label: String) {
+private fun SecretField(value: String, onValueChange: (String) -> Unit, label: String, keySaved: Boolean) {
     var visible by remember { mutableStateOf(false) }
+    val typing = value.isNotEmpty()
+    // A cleared field (e.g. after saving) starts hidden again for the next key.
+    LaunchedEffect(typing) { if (!typing) visible = false }
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
         label = { Text(label) },
+        placeholder = if (keySaved) {
+            { Text(stringResource(R.string.settings_key_saved_placeholder)) }
+        } else {
+            null
+        },
+        supportingText = when {
+            typing -> { { Text(stringResource(R.string.settings_key_new)) } }
+            keySaved -> { { Text(stringResource(R.string.settings_key_saved)) } }
+            else -> null
+        },
         singleLine = true,
-        visualTransformation = if (visible) VisualTransformation.None else PasswordVisualTransformation(),
+        visualTransformation = if (visible && typing) VisualTransformation.None else PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, autoCorrectEnabled = false),
-        trailingIcon = {
-            IconButton(onClick = { visible = !visible }) {
-                Icon(
-                    painterResource(if (visible) R.drawable.ic_visibility_off else R.drawable.ic_visibility),
-                    contentDescription = stringResource(if (visible) R.string.settings_hide_key else R.string.settings_show_key)
-                )
+        trailingIcon = if (typing) {
+            {
+                IconButton(onClick = { visible = !visible }) {
+                    Icon(
+                        painterResource(if (visible) R.drawable.ic_visibility_off else R.drawable.ic_visibility),
+                        contentDescription = stringResource(if (visible) R.string.settings_hide_key else R.string.settings_show_key)
+                    )
+                }
             }
+        } else {
+            null
         },
         modifier = Modifier.fillMaxWidth()
     )

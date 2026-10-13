@@ -33,7 +33,8 @@ store or send audio.
 
 **Settings.** Your vault folder, file name, AI provider, model name and API key are stored
 in the app's private storage on your phone. They are excluded from Android backups and
-device transfers.
+device transfers. The API key is encrypted with a key from the Android Keystore that never
+leaves your phone, and once saved it is not shown again in the app.
 
 ## What leaves your phone
 
