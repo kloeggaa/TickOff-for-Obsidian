@@ -80,6 +80,11 @@
                 android:resource="@xml/task_list_widget_info" />
         </receiver>
 
+        <!-- Task List row and refresh clicks. Not exported: only this app's PendingIntents may tick off tasks. -->
+        <receiver
+            android:name=".widget.TaskRowActionReceiver"
+            android:exported="false" />
+
         <service
             android:name=".widget.TaskListWidgetService"
             android:exported="false"

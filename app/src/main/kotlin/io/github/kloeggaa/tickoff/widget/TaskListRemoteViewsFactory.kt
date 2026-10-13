@@ -64,14 +64,14 @@ class TaskListRemoteViewsFactory(
         }
 
         val toggleFill = Intent().apply {
-            putExtra(TaskListWidgetProvider.EXTRA_ROW_ACTION, TaskListWidgetProvider.ROW_ACTION_TOGGLE)
-            putExtra(TaskListWidgetProvider.EXTRA_LINE_CONTENT, task.rawLine)
+            putExtra(TaskRowActionReceiver.EXTRA_ROW_ACTION, TaskRowActionReceiver.ROW_ACTION_TOGGLE)
+            putExtra(TaskRowActionReceiver.EXTRA_LINE_CONTENT, task.rawLine)
         }
         views.setOnClickFillInIntent(R.id.task_item_checkbox, toggleFill)
 
         if (openMode != OpenMode.OFF) {
             val openFill = Intent().apply {
-                putExtra(TaskListWidgetProvider.EXTRA_ROW_ACTION, TaskListWidgetProvider.ROW_ACTION_OPEN)
+                putExtra(TaskRowActionReceiver.EXTRA_ROW_ACTION, TaskRowActionReceiver.ROW_ACTION_OPEN)
             }
             views.setOnClickFillInIntent(R.id.task_item_root, openFill)
         }

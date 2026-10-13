@@ -16,16 +16,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
+/**
+ * Exported for the system's APPWIDGET_* broadcasts only. Row and refresh clicks go to the
+ * non-exported [TaskRowActionReceiver].
+ */
 class TaskListWidgetProvider : AppWidgetProvider() {
 
     companion object {
-        const val ACTION_TASK_LIST_ITEM_CLICK = "io.github.kloeggaa.tickoff.ACTION_TASK_ROW_CLICK"
-        const val ACTION_REFRESH_TASK_LIST = "io.github.kloeggaa.tickoff.ACTION_REFRESH_TASK_LIST"
-        const val EXTRA_ROW_ACTION = "io.github.kloeggaa.tickoff.extra.ROW_ACTION"
-        const val ROW_ACTION_TOGGLE = "toggle"
-        const val ROW_ACTION_OPEN = "open"
-        const val EXTRA_LINE_CONTENT = "io.github.kloeggaa.tickoff.extra.LINE_CONTENT"
-
         suspend fun updateWidget(
             context: Context,
             appWidgetManager: AppWidgetManager,
@@ -60,8 +57,8 @@ class TaskListWidgetProvider : AppWidgetProvider() {
             views.setRemoteAdapter(R.id.task_list_view, adapterIntent)
             views.setEmptyView(R.id.task_list_view, R.id.task_list_empty)
 
-            val itemClickIntent = Intent(context, TaskListWidgetProvider::class.java).apply {
-                action = ACTION_TASK_LIST_ITEM_CLICK
+            val itemClickIntent = Intent(context, TaskRowActionReceiver::class.java).apply {
+                action = TaskRowActionReceiver.ACTION_TASK_LIST_ITEM_CLICK
                 putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
             }
             // Mutable: each row fills in its own action and line through setOnClickFillInIntent.
@@ -73,8 +70,8 @@ class TaskListWidgetProvider : AppWidgetProvider() {
             )
             views.setPendingIntentTemplate(R.id.task_list_view, itemClickPendingIntent)
 
-            val refreshIntent = Intent(context, TaskListWidgetProvider::class.java).apply {
-                action = ACTION_REFRESH_TASK_LIST
+            val refreshIntent = Intent(context, TaskRowActionReceiver::class.java).apply {
+                action = TaskRowActionReceiver.ACTION_REFRESH_TASK_LIST
                 putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
             }
             val refreshPendingIntent = PendingIntent.getBroadcast(
@@ -118,66 +115,6 @@ class TaskListWidgetProvider : AppWidgetProvider() {
                 appWidgetIds.forEach { appWidgetId ->
                     updateWidget(context, appWidgetManager, appWidgetId)
                 }
-            } finally {
-                pendingResult.finish()
-            }
-        }
-    }
-
-    override fun onReceive(context: Context, intent: Intent) {
-        val widgetId = intent.getIntExtra(
-            AppWidgetManager.EXTRA_APPWIDGET_ID,
-            AppWidgetManager.INVALID_APPWIDGET_ID
-        )
-        when (intent.action) {
-            ACTION_REFRESH_TASK_LIST -> {
-                if (widgetId == AppWidgetManager.INVALID_APPWIDGET_ID) return
-                // Also re-renders the header, so a vault picked meanwhile shows up.
-                val pendingResult = goAsync()
-                CoroutineScope(Dispatchers.IO).launch {
-                    try {
-                        val manager = AppWidgetManager.getInstance(context)
-                        updateWidget(context, manager, widgetId)
-                        @Suppress("DEPRECATION")
-                        manager.notifyAppWidgetViewDataChanged(widgetId, R.id.task_list_view)
-                    } finally {
-                        pendingResult.finish()
-                    }
-                }
-            }
-            ACTION_TASK_LIST_ITEM_CLICK -> {
-                if (widgetId == AppWidgetManager.INVALID_APPWIDGET_ID) return
-                when (intent.getStringExtra(EXTRA_ROW_ACTION)) {
-                    ROW_ACTION_TOGGLE -> handleToggle(context, intent, widgetId)
-                    ROW_ACTION_OPEN -> handleOpenInObsidian(context, widgetId)
-                }
-            }
-            // Must fall through to super for onUpdate/onDeleted/onAppWidgetOptionsChanged
-            // dispatch to keep working.
-            else -> super.onReceive(context, intent)
-        }
-    }
-
-    private fun handleToggle(context: Context, intent: Intent, widgetId: Int) {
-        val lineContent = intent.getStringExtra(EXTRA_LINE_CONTENT) ?: return
-        val pendingResult = goAsync()
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                if (WidgetTaskFile.markDone(context, widgetId, lineContent)) {
-                    // Other widgets may show the same file, so all of them need the change.
-                    refreshAll(context)
-                }
-            } finally {
-                pendingResult.finish()
-            }
-        }
-    }
-
-    private fun handleOpenInObsidian(context: Context, widgetId: Int) {
-        val pendingResult = goAsync()
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                ObsidianLauncher.openTaskFile(context, widgetId, TaskWidgetPrefs.getWidgetOpenMode(context, widgetId))
             } finally {
                 pendingResult.finish()
             }
