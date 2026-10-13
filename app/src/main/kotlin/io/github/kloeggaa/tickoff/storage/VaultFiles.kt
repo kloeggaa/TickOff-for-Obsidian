@@ -4,8 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.DocumentsContract
-import android.util.Log
 import androidx.documentfile.provider.DocumentFile
+import io.github.kloeggaa.tickoff.SafeLog
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.text.SimpleDateFormat
@@ -60,7 +60,7 @@ object VaultFiles {
     fun vaultName(context: Context, vaultTreeUri: String): String? = try {
         DocumentFile.fromTreeUri(context, Uri.parse(vaultTreeUri))?.name
     } catch (e: Exception) {
-        Log.w(TAG, "Could not read vault name", e)
+        SafeLog.w(TAG, "Could not read vault name", e)
         null
     }
 
@@ -75,7 +75,7 @@ object VaultFiles {
                 ?: ""
             text.split("\n")
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to read task file", e)
+            SafeLog.e(TAG, "Failed to read task file", e)
             null
         }
     }
@@ -94,7 +94,7 @@ object VaultFiles {
                     ?: ""
                 replaceText(context, file.uri, current, TaskMarkdown.insertTaskEntry(current, "$normalized\n"))
             } catch (e: Exception) {
-                Log.e(TAG, "Failed to save tasks", e)
+                SafeLog.e(TAG, "Failed to save tasks", e)
                 false
             }
         }
@@ -118,7 +118,7 @@ object VaultFiles {
                     ?: return@withLock false
                 replaceText(context, file.uri, current, updated.joinToString("\n"))
             } catch (e: Exception) {
-                Log.e(TAG, "Failed to tick off task", e)
+                SafeLog.e(TAG, "Failed to tick off task", e)
                 false
             }
         }
@@ -168,7 +168,7 @@ object VaultFiles {
             ?.use { it.readText() }
             ?.split("\n")
     } catch (e: Exception) {
-        Log.e(TAG, "Failed to read picked task file", e)
+        SafeLog.e(TAG, "Failed to read picked task file", e)
         null
     }
 
@@ -180,7 +180,7 @@ object VaultFiles {
             try {
                 replaceText(context, Uri.parse(documentUri), lines.joinToString("\n"), updated.joinToString("\n"))
             } catch (e: Exception) {
-                Log.e(TAG, "Failed to tick off task in picked file", e)
+                SafeLog.e(TAG, "Failed to tick off task in picked file", e)
                 false
             }
         }

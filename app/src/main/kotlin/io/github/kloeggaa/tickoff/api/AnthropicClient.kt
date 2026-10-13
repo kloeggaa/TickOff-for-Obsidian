@@ -1,6 +1,6 @@
 package io.github.kloeggaa.tickoff.api
 
-import android.util.Log
+import io.github.kloeggaa.tickoff.SafeLog
 import io.github.kloeggaa.tickoff.api.models.AnthropicMessageRequest
 import io.github.kloeggaa.tickoff.api.models.Message
 import kotlinx.coroutines.delay
@@ -61,7 +61,7 @@ class AnthropicClient(private val apiKey: String) {
     } catch (_: IOException) {
         KeyCheckResult(KeyCheckOutcome.NETWORK_ERROR)
     } catch (e: Exception) {
-        Log.e(TAG, "key check failed", e)
+        SafeLog.e(TAG, "key check failed", e)
         KeyCheckResult(KeyCheckOutcome.OTHER)
     }
 
@@ -74,7 +74,7 @@ class AnthropicClient(private val apiKey: String) {
     } catch (_: IOException) {
         ModelListResult(emptyList(), KeyCheckResult(KeyCheckOutcome.NETWORK_ERROR))
     } catch (e: Exception) {
-        Log.e(TAG, "model list failed", e)
+        SafeLog.e(TAG, "model list failed", e)
         ModelListResult(emptyList(), KeyCheckResult(KeyCheckOutcome.OTHER))
     }
 
@@ -115,7 +115,7 @@ class AnthropicClient(private val apiKey: String) {
                 lastError = "Network error while contacting Anthropic: ${e.localizedMessage ?: "connection failed"}."
                 if (attempt == 2) return CompletionResult(error = lastError)
             } catch (e: Exception) {
-                Log.e(TAG, "message request failed", e)
+                SafeLog.e(TAG, "message request failed", e)
                 return CompletionResult(error = "Unexpected error while contacting Anthropic: ${e.localizedMessage ?: "unknown error"}.")
             }
             delay(500L * (attempt + 1))

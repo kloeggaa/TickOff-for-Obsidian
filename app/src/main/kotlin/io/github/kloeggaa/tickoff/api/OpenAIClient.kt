@@ -1,6 +1,7 @@
 package io.github.kloeggaa.tickoff.api
 
 import android.util.Log
+import io.github.kloeggaa.tickoff.SafeLog
 import io.github.kloeggaa.tickoff.api.models.ChatRequest
 import io.github.kloeggaa.tickoff.api.models.Message
 import kotlinx.coroutines.delay
@@ -41,7 +42,7 @@ class OpenAIClient(private val apiKey: String) {
     } catch (_: IOException) {
         KeyCheckResult(KeyCheckOutcome.NETWORK_ERROR)
     } catch (e: Exception) {
-        Log.e(TAG, "key check failed", e)
+        SafeLog.e(TAG, "key check failed", e)
         KeyCheckResult(KeyCheckOutcome.OTHER)
     }
 
@@ -54,7 +55,7 @@ class OpenAIClient(private val apiKey: String) {
     } catch (_: IOException) {
         ModelListResult(emptyList(), KeyCheckResult(KeyCheckOutcome.NETWORK_ERROR))
     } catch (e: Exception) {
-        Log.e(TAG, "model list failed", e)
+        SafeLog.e(TAG, "model list failed", e)
         ModelListResult(emptyList(), KeyCheckResult(KeyCheckOutcome.OTHER))
     }
 
@@ -87,7 +88,7 @@ class OpenAIClient(private val apiKey: String) {
                 lastError = "Network error while contacting OpenAI: ${e.localizedMessage ?: "connection failed"}."
                 if (attempt == maxAttempts - 1) return CompletionResult(error = lastError)
             } catch (e: Exception) {
-                Log.e(TAG, "chat request failed", e)
+                SafeLog.e(TAG, "chat request failed", e)
                 return CompletionResult(error = "Unexpected error while contacting OpenAI: ${e.localizedMessage ?: "unknown error"}.")
             }
             delay(500L * (attempt + 1))

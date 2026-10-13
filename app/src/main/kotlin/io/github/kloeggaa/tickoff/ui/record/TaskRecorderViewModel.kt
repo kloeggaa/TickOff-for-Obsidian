@@ -1,10 +1,10 @@
 package io.github.kloeggaa.tickoff.ui.record
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.github.kloeggaa.tickoff.R
+import io.github.kloeggaa.tickoff.SafeLog
 import io.github.kloeggaa.tickoff.api.AiProviderClient
 import io.github.kloeggaa.tickoff.api.models.Message
 import io.github.kloeggaa.tickoff.data.AppSettings
@@ -201,7 +201,7 @@ class TaskRecorderViewModel(
                     _statusText.value = appContext.getString(R.string.record_save_failed, location.relativePath)
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "extraction failed", e)
+                SafeLog.e(TAG, "extraction failed", e)
                 _statusText.value = appContext.getString(R.string.record_extract_failed, e.localizedMessage ?: "error")
             } finally {
                 _isExtractingTasks.value = false
