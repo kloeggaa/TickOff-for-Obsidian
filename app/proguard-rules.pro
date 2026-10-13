@@ -3,3 +3,8 @@
 # Retrofit service interfaces are proxied at runtime.
 -keep,allowobfuscation interface io.github.kloeggaa.tickoff.api.*Service
 -keepattributes Signature, InnerClasses, EnclosingMethod, RuntimeVisibleAnnotations, RuntimeVisibleParameterAnnotations, AnnotationDefault
+# Release builds drop verbose and debug logging; warnings and errors stay for bug reports.
+-assumenosideeffects class android.util.Log {
+    public static int v(...);
+    public static int d(...);
+}

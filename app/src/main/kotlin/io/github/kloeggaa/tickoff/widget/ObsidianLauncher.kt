@@ -85,7 +85,8 @@ object ObsidianLauncher {
             return
         }
         val uri = buildUri(mode, vaultName, relativePath) ?: return
-        Log.d(TAG, "opening $uri")
+        // The URI holds the vault name and file path, so only the mode is logged.
+        Log.d(TAG, "opening task file in Obsidian, mode=${mode.key}")
         withContext(Dispatchers.Main) {
             try {
                 context.startActivity(Intent(Intent.ACTION_VIEW, uri).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
