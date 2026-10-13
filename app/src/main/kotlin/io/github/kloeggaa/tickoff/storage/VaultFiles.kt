@@ -6,6 +6,8 @@ import android.net.Uri
 import android.provider.DocumentsContract
 import android.util.Log
 import androidx.documentfile.provider.DocumentFile
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -27,6 +29,12 @@ data class TaskFileLocation(
  */
 object VaultFiles {
     private const val TAG = "TickOffVault"
+
+    /**
+     * Serializes every read-modify-write of a task file. Widget ticks and recorded tasks run on
+     * different coroutines; without this, the later write would drop the other one's change.
+     */
+    private val writeLock = Mutex()
 
     fun hasVaultAccess(context: Context, vaultTreeUri: String): Boolean {
         val uri = Uri.parse(vaultTreeUri)
@@ -73,20 +81,22 @@ object VaultFiles {
     }
 
     /** Adds recorded task lines to the task file, creating the folder and file if needed. */
-    fun appendTasks(context: Context, location: TaskFileLocation, tasksMarkdown: String): Boolean {
+    suspend fun appendTasks(context: Context, location: TaskFileLocation, tasksMarkdown: String): Boolean {
         val normalized = tasksMarkdown.trim()
         if (normalized.isBlank()) return true
-        return try {
-            val root = vaultRoot(context, location) ?: return false
-            val file = findOrCreateFile(root, location) ?: return false
-            val current = context.contentResolver.openInputStream(file.uri)
-                ?.bufferedReader()
-                ?.use { it.readText() }
-                ?: ""
-            writeText(context, file.uri, TaskMarkdown.insertTaskEntry(current, "$normalized\n"))
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to save tasks", e)
-            false
+        return writeLock.withLock {
+            try {
+                val root = vaultRoot(context, location) ?: return@withLock false
+                val file = findOrCreateFile(root, location) ?: return@withLock false
+                val current = context.contentResolver.openInputStream(file.uri)
+                    ?.bufferedReader()
+                    ?.use { it.readText() }
+                    ?: ""
+                replaceText(context, file.uri, current, TaskMarkdown.insertTaskEntry(current, "$normalized\n"))
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to save tasks", e)
+                false
+            }
         }
     }
 
@@ -94,23 +104,24 @@ object VaultFiles {
      * Ticks off the first open line equal to [targetLine]. The file is re-read fresh each call, so
      * it is the single source of truth for which occurrence of a duplicated line was already ticked.
      */
-    fun markDone(context: Context, location: TaskFileLocation, targetLine: String): Boolean {
-        return try {
-            val root = vaultRoot(context, location) ?: return false
-            val file = findFile(root, location) ?: return false
-            val lines = context.contentResolver.openInputStream(file.uri)
-                ?.bufferedReader()
-                ?.use { it.readText() }
-                ?.split("\n")
-                ?: return false
-            val today = SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date())
-            val updated = TaskMarkdown.markFirstMatchingLineDone(lines, targetLine, today) ?: return false
-            writeText(context, file.uri, updated.joinToString("\n"))
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to tick off task", e)
-            false
+    suspend fun markDone(context: Context, location: TaskFileLocation, targetLine: String): Boolean =
+        writeLock.withLock {
+            try {
+                val root = vaultRoot(context, location) ?: return@withLock false
+                val file = findFile(root, location) ?: return@withLock false
+                val current = context.contentResolver.openInputStream(file.uri)
+                    ?.bufferedReader()
+                    ?.use { it.readText() }
+                    ?: return@withLock false
+                val today = SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date())
+                val updated = TaskMarkdown.markFirstMatchingLineDone(current.split("\n"), targetLine, today)
+                    ?: return@withLock false
+                replaceText(context, file.uri, current, updated.joinToString("\n"))
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to tick off task", e)
+                false
+            }
         }
-    }
 
     // --- A single file picked for one Task List widget (ACTION_OPEN_DOCUMENT, own persisted grant) ---
 
@@ -161,17 +172,18 @@ object VaultFiles {
         null
     }
 
-    fun markDoneInDocument(context: Context, documentUri: String, targetLine: String): Boolean {
-        val lines = readDocumentLines(context, documentUri) ?: return false
-        val today = SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date())
-        val updated = TaskMarkdown.markFirstMatchingLineDone(lines, targetLine, today) ?: return false
-        return try {
-            writeText(context, Uri.parse(documentUri), updated.joinToString("\n"))
-        } catch (e: Exception) {
-            Log.e(TAG, "Failed to tick off task in picked file", e)
-            false
+    suspend fun markDoneInDocument(context: Context, documentUri: String, targetLine: String): Boolean =
+        writeLock.withLock {
+            val lines = readDocumentLines(context, documentUri) ?: return@withLock false
+            val today = SimpleDateFormat("yyyy-MM-dd", Locale.US).format(Date())
+            val updated = TaskMarkdown.markFirstMatchingLineDone(lines, targetLine, today) ?: return@withLock false
+            try {
+                replaceText(context, Uri.parse(documentUri), lines.joinToString("\n"), updated.joinToString("\n"))
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to tick off task in picked file", e)
+                false
+            }
         }
-    }
 
     /**
      * Path of a picked file relative to the vault root, for Obsidian's deep links; null when the
@@ -198,6 +210,21 @@ object VaultFiles {
         DocumentsContract.buildDocumentUriUsingTree(tree, DocumentsContract.getTreeDocumentId(tree))
     } catch (_: Exception) {
         null
+    }
+
+    /**
+     * Writes [updated] over the file. "wt" truncates before writing, so if the write fails part-way
+     * the [original] content is written back rather than leaving a cut-off task file.
+     */
+    private fun replaceText(context: Context, uri: Uri, original: String, updated: String): Boolean = try {
+        writeText(context, uri, updated)
+    } catch (e: Exception) {
+        try {
+            writeText(context, uri, original)
+        } catch (restoreError: Exception) {
+            e.addSuppressed(restoreError)
+        }
+        throw e
     }
 
     private fun writeText(context: Context, uri: Uri, content: String): Boolean {

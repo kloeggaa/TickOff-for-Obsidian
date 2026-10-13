@@ -1,9 +1,14 @@
 package io.github.kloeggaa.tickoff.storage
 
+import android.net.Uri
+import androidx.documentfile.provider.DocumentFile
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import io.github.kloeggaa.tickoff.data.AppSettings
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -38,5 +43,32 @@ class VaultFilesDeviceTest {
         val lines = VaultFiles.readAllLines(context, location)!!
         assertTrue(lines[1], lines[1].startsWith("- [x] First 📅 2026-10-10 ✅ "))
         assertEquals("- [ ] Second", lines[0])
+    }
+
+    /** Recorded tasks and widget ticks run on different coroutines; neither may drop the other's change. */
+    @Test
+    fun concurrentAppendsAndTicksKeepEveryChange() = runBlocking {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val vault = AppSettings(context).vaultTreeUriFlow.first()
+        assumeTrue("Pick a vault folder in the app first", vault != null && VaultFiles.hasVaultAccess(context, vault))
+        val location = TaskFileLocation(vault!!, "TickOffTest", "Race-${System.currentTimeMillis()}.md")
+        try {
+            val existing = (1..10).map { "- [ ] Existing $it" }
+            existing.forEach { assertTrue(VaultFiles.appendTasks(context, location, it)) }
+
+            coroutineScope {
+                existing.forEach { line -> launch(Dispatchers.IO) { VaultFiles.markDone(context, location, line) } }
+                (1..10).forEach { n -> launch(Dispatchers.IO) { VaultFiles.appendTasks(context, location, "- [ ] New $n") } }
+            }
+
+            val lines = VaultFiles.readAllLines(context, location)!!
+            (1..10).forEach { n ->
+                assertTrue("Existing $n not ticked", lines.any { it.startsWith("- [x] Existing $n ✅ ") })
+                assertTrue("New $n lost", lines.contains("- [ ] New $n"))
+            }
+        } finally {
+            DocumentFile.fromTreeUri(context, Uri.parse(vault))
+                ?.findFile(location.folder)?.findFile(location.fileName)?.delete()
+        }
     }
 }
