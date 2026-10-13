@@ -42,6 +42,7 @@
     <string name="settings_saved">Settings saved</string>
     <string name="settings_show_key">Show API key</string>
     <string name="settings_hide_key">Hide API key</string>
+    <string name="settings_key_unreadable">Your saved API key can\'t be read on this device. Please enter it again.</string>
     <string name="settings_test_key">Test API key</string>
     <string name="settings_load_models">Load models</string>
     <string name="settings_pick_model">Pick a model</string>

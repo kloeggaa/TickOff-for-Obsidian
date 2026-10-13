@@ -9,9 +9,12 @@ import androidx.datastore.preferences.preferencesDataStore
 import io.github.kloeggaa.tickoff.api.AnthropicClient
 import io.github.kloeggaa.tickoff.api.OpenAIClient
 import io.github.kloeggaa.tickoff.storage.TaskFileLocation
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withContext
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
@@ -51,9 +54,14 @@ class AppSettings(private val context: Context) {
     val taskFolderFlow: Flow<String> = context.dataStore.data.map { it[TASK_FOLDER].orEmpty() }
     val taskFileNameFlow: Flow<String> = context.dataStore.data.map { it[TASK_FILE_NAME] ?: DEFAULT_TASK_FILE_NAME }
     val aiProviderFlow: Flow<String> = context.dataStore.data.map { it[AI_PROVIDER] ?: PROVIDER_OPENAI }
-    val openAiApiKeyFlow: Flow<String?> = context.dataStore.data.map { it[OPENAI_API_KEY] }
+    // API keys are stored encrypted (ApiKeyCipher); a key that can't be decrypted reads as no key.
+    val openAiApiKeyFlow: Flow<String?> = context.dataStore.data
+        .map { prefs -> prefs[OPENAI_API_KEY]?.let(ApiKeyCipher::decrypt) }
+        .flowOn(Dispatchers.IO)
     val openAiModelFlow: Flow<String> = context.dataStore.data.map { it[OPENAI_MODEL] ?: OpenAIClient.DEFAULT_MODEL }
-    val anthropicApiKeyFlow: Flow<String?> = context.dataStore.data.map { it[ANTHROPIC_API_KEY] }
+    val anthropicApiKeyFlow: Flow<String?> = context.dataStore.data
+        .map { prefs -> prefs[ANTHROPIC_API_KEY]?.let(ApiKeyCipher::decrypt) }
+        .flowOn(Dispatchers.IO)
     val anthropicModelFlow: Flow<String> = context.dataStore.data.map {
         it[ANTHROPIC_MODEL] ?: AnthropicClient.DEFAULT_MODEL
     }
@@ -82,18 +90,28 @@ class AppSettings(private val context: Context) {
         }
     }
 
+    /**
+     * Whether a key is stored for [provider] but can't be decrypted on this device, e.g. after the
+     * app's data was restored from a copy. Settings then asks for the key again.
+     */
+    suspend fun isStoredKeyUnreadable(provider: String): Boolean {
+        val pref = if (provider == PROVIDER_ANTHROPIC) ANTHROPIC_API_KEY else OPENAI_API_KEY
+        val stored = context.dataStore.data.first()[pref] ?: return false
+        return withContext(Dispatchers.IO) { ApiKeyCipher.decrypt(stored) } == null
+    }
+
     suspend fun saveAi(provider: String, openAiKey: String, openAiModel: String, anthropicKey: String, anthropicModel: String) {
         context.dataStore.edit {
             it[AI_PROVIDER] = provider
-            putOrRemove(it, OPENAI_API_KEY, openAiKey)
-            putOrRemove(it, ANTHROPIC_API_KEY, anthropicKey)
+            putKeyOrRemove(it, OPENAI_API_KEY, openAiKey)
+            putKeyOrRemove(it, ANTHROPIC_API_KEY, anthropicKey)
             it[OPENAI_MODEL] = openAiModel.trim().ifBlank { OpenAIClient.DEFAULT_MODEL }
             it[ANTHROPIC_MODEL] = anthropicModel.trim().ifBlank { AnthropicClient.DEFAULT_MODEL }
         }
     }
 
-    private fun putOrRemove(prefs: androidx.datastore.preferences.core.MutablePreferences, key: Preferences.Key<String>, value: String) {
+    private fun putKeyOrRemove(prefs: androidx.datastore.preferences.core.MutablePreferences, key: Preferences.Key<String>, value: String) {
         val normalized = value.trim()
-        if (normalized.isBlank()) prefs.remove(key) else prefs[key] = normalized
+        if (normalized.isBlank()) prefs.remove(key) else prefs[key] = ApiKeyCipher.encrypt(normalized)
     }
 }

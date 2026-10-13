@@ -83,6 +83,8 @@ fun SettingsScreen(onBack: () -> Unit) {
     var modelListResult by remember { mutableStateOf<ModelListResult?>(null) }
     var loadedModels by remember { mutableStateOf(emptyList<String>()) }
     var modelMenuOpen by remember { mutableStateOf(false) }
+    // Providers whose stored key can't be decrypted here (e.g. app data restored from a copy).
+    var unreadableKeys by remember { mutableStateOf(emptySet<String>()) }
 
     LaunchedEffect(Unit) {
         vaultUri = settings.vaultTreeUriFlow.first()
@@ -94,6 +96,9 @@ fun SettingsScreen(onBack: () -> Unit) {
         openAiModel = settings.openAiModelFlow.first()
         anthropicKey = settings.anthropicApiKeyFlow.first().orEmpty()
         anthropicModel = settings.anthropicModelFlow.first()
+        unreadableKeys = listOf(AppSettings.PROVIDER_OPENAI, AppSettings.PROVIDER_ANTHROPIC)
+            .filter { settings.isStoredKeyUnreadable(it) }
+            .toSet()
         loaded = true
     }
 
@@ -194,6 +199,13 @@ fun SettingsScreen(onBack: () -> Unit) {
                     modelMenuOpen
                 ) { modelMenuOpen = it }
             }
+            if (provider in unreadableKeys && (if (isAnthropic) anthropicKey else openAiKey).isBlank()) {
+                Text(
+                    stringResource(R.string.settings_key_unreadable),
+                    color = MaterialTheme.colorScheme.error,
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
 
             val keyToTest = (if (isAnthropic) anthropicKey else openAiKey).trim()
             val modelToTest = (if (isAnthropic) anthropicModel else openAiModel).trim()
@@ -256,6 +268,8 @@ fun SettingsScreen(onBack: () -> Unit) {
                     scope.launch {
                         settings.saveTaskFile(folder, fileName)
                         settings.saveAi(provider, openAiKey, openAiModel, anthropicKey, anthropicModel)
+                        // Saving re-encrypts entered keys and removes blank ones, so nothing unreadable is left.
+                        unreadableKeys = emptySet()
                         folder = settings.taskFolderFlow.first()
                         fileName = settings.taskFileNameFlow.first()
                         withContext(Dispatchers.IO) { TaskListWidgetProvider.refreshAll(context) }
