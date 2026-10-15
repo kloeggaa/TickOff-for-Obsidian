@@ -62,6 +62,18 @@ screen) and `play` (no donation link, as Google Play's payments policy requires)
 Release signing is read from a git-ignored `keystore.properties` in the project root (copy
 `keystore.properties.example`). Without it, release builds are unsigned.
 
+## Help and feedback
+
+- Found a bug? [Report it](https://github.com/kloeggaa/TickOff-for-Obsidian/issues/new?template=bug_report.yml).
+- Questions about setting things up: ask in
+  [Discussions Q&A](https://github.com/kloeggaa/TickOff-for-Obsidian/discussions/categories/q-a).
+- Rough ideas: talk them through in
+  [Discussions Ideas](https://github.com/kloeggaa/TickOff-for-Obsidian/discussions/categories/ideas);
+  concrete wishes can go straight to a
+  [feature request](https://github.com/kloeggaa/TickOff-for-Obsidian/issues/new?template=feature_request.yml).
+
+Please never post your API key, and remove private task text from screenshots and logs.
+
 ## Support
 
 TickOff is free and has no ads. If it saves you time, you can support its development:

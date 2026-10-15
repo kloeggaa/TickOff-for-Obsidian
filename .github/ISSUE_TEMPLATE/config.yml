@@ -1,5 +1,11 @@
 blank_issues_enabled: true
 contact_links:
+  - name: Questions and help
+    url: https://github.com/kloeggaa/TickOff-for-Obsidian/discussions/categories/q-a
+    about: Ask how to set something up, or get help from other users.
+  - name: Ideas
+    url: https://github.com/kloeggaa/TickOff-for-Obsidian/discussions/categories/ideas
+    about: Talk through a rough idea before it becomes a feature request.
   - name: Privacy policy
     url: https://github.com/kloeggaa/TickOff-for-Obsidian/blob/main/PRIVACY.md
     about: What TickOff does with your vault, your speech and your API key.
