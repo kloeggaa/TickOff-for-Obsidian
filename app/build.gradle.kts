@@ -39,7 +39,7 @@ android {
     productFlavors {
         create("fdroid") {
             dimension = "store"
-            buildConfigField("String", "DONATE_URL", "\"https://buy.stripe.com/8x2cN6f1H47U9FRgs9eUU00\"")
+            buildConfigField("String", "DONATE_URL", "\"https://buy.stripe.com/3cIaEY7zfgUGdW78ZHeUU01\"")
         }
         create("play") {
             dimension = "store"
