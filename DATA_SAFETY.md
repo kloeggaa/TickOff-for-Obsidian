@@ -29,9 +29,9 @@ app info and performance (no crash logs or diagnostics), device or other IDs.
    a transfer the user starts and reasonably expects as not "sharing".
 2. **Not ephemeral:** the provider may keep API requests under its own retention policy, so
    we don't claim ephemeral processing.
-3. **Audio:** the app does not record, store or transmit audio itself. Speech is recognized by
-   the system's speech recognition service (requested on-device), which returns text to the
-   app.
+3. **Audio:** while the recorder is running, the app reads the microphone and passes the audio
+   in memory to the system's speech recognition service (requested on-device), which returns
+   text to the app. The app never stores audio or transmits it off the device itself.
 4. **Files:** the task files (the default one in the vault folder and any file picked for a
    widget) are read and written locally through the Storage Access Framework and never leave
    the device through the app.

@@ -26,10 +26,11 @@ access back when you remove the last widget showing it. TickOff does not read an
 You can revoke access at any time by uninstalling the app.
 
 **Microphone (voice capture only).** When you open the recorder, the app asks for microphone
-access. Speech is turned into text by your phone's speech recognition service (for example
-Google's speech services or another engine installed on your device). TickOff asks that
-service to recognize speech on the device where possible. TickOff itself does not record,
-store or send audio.
+access. While you record, TickOff keeps the microphone open and passes the audio directly to
+your phone's speech recognition service (for example Google's speech services or another engine
+installed on your device), which turns it into text. TickOff asks that service to recognize
+speech on the device where possible. The audio is held in memory only for that hand-over; TickOff
+never stores it or sends it anywhere else.
 
 **Settings.** Your vault folder, file name, AI provider, model name and API key are stored
 in the app's private storage on your phone. They are excluded from Android backups and

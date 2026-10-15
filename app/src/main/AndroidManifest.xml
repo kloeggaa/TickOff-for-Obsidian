@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Voice capture: the device speech recognizer records while the recorder screen is open. -->
+    <!-- Voice capture: the microphone is open while recording; the audio goes to the device speech recognizer. -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <!-- Voice capture: the transcript is sent to the user's chosen AI provider (OpenAI or Anthropic). -->
     <uses-permission android:name="android.permission.INTERNET" />

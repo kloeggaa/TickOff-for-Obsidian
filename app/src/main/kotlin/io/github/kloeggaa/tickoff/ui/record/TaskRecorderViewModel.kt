@@ -58,11 +58,8 @@ class TaskRecorderViewModel(
     private val _taskMarkdown = MutableStateFlow("")
     val taskMarkdown: StateFlow<String> = _taskMarkdown
 
-    private var latestCapturedTranscript: String = ""
     private var accumulatedTranscript: String = ""
     private var captureSessionId: Long = 0L
-    private var extractionRequestId: Long = 0L
-    private var extractionAllowedByStop: Boolean = false
 
     fun startCapture() {
         if (_recordingActive.value) {
@@ -74,18 +71,16 @@ class TaskRecorderViewModel(
         }
 
         captureSessionId += 1L
-        extractionAllowedByStop = false
         _taskMarkdown.value = ""
         _finalTranscript.value = ""
         _needsSettings.value = false
-        latestCapturedTranscript = ""
         accumulatedTranscript = ""
         _statusText.value = ""
 
         sttManager.onPartialResult = { text -> onPartialTranscriptUpdated(text) }
         sttManager.onResult = { text -> onTranscriptCaptured(text) }
 
-        sttManager.startListening(continuous = true)
+        sttManager.startListening()
         _recordingActive.value = true
     }
 
@@ -93,26 +88,24 @@ class TaskRecorderViewModel(
         if (!_recordingActive.value) {
             return
         }
-        extractionAllowedByStop = true
         val sessionAtStop = captureSessionId
-        val requestId = extractionRequestId + 1L
-        extractionRequestId = requestId
         _recordingActive.value = false
-        sttManager.stopListening()
-        sttManager.onPartialResult = null
-        sttManager.onResult = null
+        // Shown as "Extracting tasks…" while the recognizer finishes the last words.
+        _isExtractingTasks.value = true
+        sttManager.finish {
+            sttManager.onPartialResult = null
+            sttManager.onResult = null
+            if (sessionAtStop != captureSessionId) return@finish
 
-        // A partial result that never became final still counts as what the user said.
-        val transcriptToExtract = latestCapturedTranscript
-            .ifBlank { _finalTranscript.value.trim() }
-
-        if (transcriptToExtract.isBlank()) {
-            _statusText.value = appContext.getString(R.string.record_no_speech)
-            return
+            val transcript = accumulatedTranscript.trim()
+            if (transcript.isBlank()) {
+                _isExtractingTasks.value = false
+                _statusText.value = appContext.getString(R.string.record_no_speech)
+                return@finish
+            }
+            _finalTranscript.value = transcript
+            extractTasksFromTranscript(transcript, sessionAtStop)
         }
-
-        _finalTranscript.value = transcriptToExtract
-        extractTasksFromTranscript(transcriptToExtract, requestId, sessionAtStop)
     }
 
     fun onScreenClosed() {
@@ -123,7 +116,6 @@ class TaskRecorderViewModel(
         val cleaned = text.trim()
         if (cleaned.isBlank()) return
         accumulatedTranscript = TranscriptMerge.merge(accumulatedTranscript, cleaned)
-        latestCapturedTranscript = accumulatedTranscript
         _finalTranscript.value = accumulatedTranscript
     }
 
@@ -133,13 +125,9 @@ class TaskRecorderViewModel(
         _finalTranscript.value = TranscriptMerge.merge(accumulatedTranscript, cleaned)
     }
 
-    private fun extractTasksFromTranscript(cleaned: String, requestId: Long, sessionAtStop: Long) {
-        if (!extractionAllowedByStop || _recordingActive.value || _isExtractingTasks.value) {
-            return
-        }
-
+    /** Runs with [isExtractingTasks] already set; clears it when done. */
+    private fun extractTasksFromTranscript(cleaned: String, sessionAtStop: Long) {
         viewModelScope.launch {
-            _isExtractingTasks.value = true
             try {
                 val location = settings.taskFileLocation()
                 if (location == null) {
@@ -174,11 +162,7 @@ class TaskRecorderViewModel(
                     listOf(Message("system", extractionPrompt), Message("user", cleaned))
                 )
                 // A new recording started meanwhile: this result belongs to an old one.
-                val shouldApplyResult = requestId == extractionRequestId &&
-                    !_recordingActive.value &&
-                    sessionAtStop == captureSessionId &&
-                    extractionAllowedByStop
-                if (!shouldApplyResult) return@launch
+                if (sessionAtStop != captureSessionId || _recordingActive.value) return@launch
 
                 if (result.content.isNullOrBlank()) {
                     _statusText.value = appContext.getString(
@@ -210,8 +194,11 @@ class TaskRecorderViewModel(
     }
 
     private fun cancelCapture() {
+        // A recording already stopped still finishes and is extracted.
+        if (!_recordingActive.value) return
+        captureSessionId += 1L
         _recordingActive.value = false
-        sttManager.stopListening()
+        sttManager.cancel()
         sttManager.onPartialResult = null
         sttManager.onResult = null
     }
