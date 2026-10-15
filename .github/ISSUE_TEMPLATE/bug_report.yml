@@ -1,0 +1,91 @@
+name: Bug report
+description: Something in TickOff doesn't work as expected.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug.
+
+        **Never paste your OpenAI or Anthropic API key**, and remove any private task text from logs or screenshots before posting.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What you did, what you expected, and what happened instead.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Add the task list widget with file Tasks/Shopping.md
+        2. Tick off a task
+        3. …
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which part of TickOff?
+      multiple: true
+      options:
+        - Task list widget
+        - Voice capture widget
+        - Record tasks screen
+        - Settings (vault, task file)
+        - Settings (AI provider, API key)
+        - Opening tasks in Obsidian
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: app-version
+    attributes:
+      label: TickOff version
+      description: Shown in your phone's app info, for example 1.0.0.
+    validations:
+      required: true
+  - type: dropdown
+    id: source
+    attributes:
+      label: Installed from
+      options:
+        - F-Droid
+        - Built from source
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Phone and Android version
+      placeholder: Pixel 8, Android 16
+    validations:
+      required: true
+  - type: input
+    id: launcher
+    attributes:
+      label: Home screen app (launcher)
+      description: Widget problems often depend on the launcher.
+      placeholder: Pixel Launcher, Nova Launcher, One UI Home, …
+  - type: dropdown
+    id: provider
+    attributes:
+      label: AI provider (for voice capture problems)
+      options:
+        - Not relevant
+        - OpenAI
+        - Claude (Anthropic)
+  - type: textarea
+    id: task-file
+    attributes:
+      label: Task file excerpt
+      description: If tasks show or save wrongly, paste a few affected lines from the Markdown file (with private details changed).
+      render: markdown
+  - type: textarea
+    id: extra
+    attributes:
+      label: Screenshots or other details
+      description: Drag images in here if they help.

@@ -1,0 +1,29 @@
+name: Feature request
+description: Suggest an idea or improvement for TickOff.
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What would you like to do?
+      description: Describe the situation or problem first, not only the solution.
+      placeholder: When I'm on the go, I'd like to …
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: How could TickOff help?
+      description: Your idea for how it could work.
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: What do you do today instead?
+      description: Workarounds or other apps or Obsidian plugins you use for this.
+  - type: checkboxes
+    id: scope
+    attributes:
+      label: Before you submit
+      options:
+        - label: I searched the existing issues and didn't find this request.
+          required: true
