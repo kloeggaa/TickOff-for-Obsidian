@@ -18,6 +18,7 @@ AutoName: TickOff for Obsidian
 
 RepoType: git
 Repo: https://github.com/kloeggaa/TickOff-for-Obsidian.git
+Binaries: https://github.com/kloeggaa/TickOff-for-Obsidian/releases/download/v%v/TickOff-%v.apk
 
 Builds:
   - versionName: 1.0.0
@@ -26,6 +27,8 @@ Builds:
     subdir: app
     gradle:
       - fdroid
+
+AllowedAPKSigningKeys: 48fcf985789767b60f3e555ff509a426486d369b7a595704db2bd01daf0d7b7c
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags

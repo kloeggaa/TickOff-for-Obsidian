@@ -6,7 +6,8 @@ plugins {
 }
 
 // Release signing is read from the git-ignored keystore.properties (see keystore.properties.example).
-// Without it, release builds are produced unsigned (F-Droid signs its own builds).
+// Without it, release builds are produced unsigned. F-Droid builds unsigned and, because the
+// build is reproducible, copies the signature from the APK attached to the GitHub release.
 val keystoreProperties = Properties().apply {
     val file = rootProject.file("keystore.properties")
     if (file.exists()) {

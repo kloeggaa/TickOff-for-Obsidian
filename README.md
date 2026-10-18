@@ -62,6 +62,12 @@ screen) and `play` (no donation link, as Google Play's payments policy requires)
 Release signing is read from a git-ignored `keystore.properties` in the project root (copy
 `keystore.properties.example`). Without it, release builds are unsigned.
 
+F-Droid uses [reproducible builds](https://f-droid.org/docs/Reproducible_Builds/): it rebuilds
+each tagged version, checks that the result matches the APK attached to the GitHub release, and
+then ships that APK with the developer's signature. For every release tag `vX.Y.Z`, build
+`assembleFdroidRelease` from a clean checkout of the tag and attach it to the GitHub release as
+`TickOff-X.Y.Z.apk`.
+
 ## Help and feedback
 
 - Found a bug? [Report it](https://github.com/kloeggaa/TickOff-for-Obsidian/issues/new?template=bug_report.yml).
